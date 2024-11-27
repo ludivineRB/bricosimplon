@@ -1,3 +1,13 @@
 [
-{"name": "Bonnes affaires"}
+{"nom": "Electroportatif", "lien": "https://www.centrale-brico.com/electroportatif", "id_categorie": "category-5020"},
+{"nom": "Outillage", "lien": "https://www.centrale-brico.com/outillage", "id_categorie": "category-5032"},
+{"nom": "Atelier-Chantier", "lien": "https://www.centrale-brico.com/atelier-chantier", "id_categorie": "category-5000"},
+{"nom": "Quincaillerie", "lien": "https://www.centrale-brico.com/quincaillerie", "id_categorie": "category-5055"},
+{"nom": "Electricité", "lien": "https://www.centrale-brico.com/electricite", "id_categorie": "category-5012"},
+{"nom": "Chauffage - Traitement de l'air", "lien": "https://www.centrale-brico.com/chauffage---traitement-de-l-air", "id_categorie": "category-5346"},
+{"nom": "Plomberie-Sanitaire", "lien": "https://www.centrale-brico.com/plomberie-sanitaire", "id_categorie": "category-5044"},
+{"nom": "Domotique-Sécurité", "lien": "https://www.centrale-brico.com/domotique-securite", "id_categorie": "category-5008"},
+{"nom": "Habitat", "lien": "https://www.centrale-brico.com/habitat", "id_categorie": "category-5027"},
+{"nom": "Jardin", "lien": "https://www.centrale-brico.com/jardin", "id_categorie": "category-5062"},
+{"nom": "Bonnes affaires", "lien": "https://www.centrale-brico.com/bonnes-affaires", "id_categorie": "category-5186"}
 ]

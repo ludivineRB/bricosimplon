@@ -6,7 +6,14 @@
 import scrapy
 
 
-class BricoscraperItem(scrapy.Item):
+class CategorieItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    categorie = scrapy.Field()
+    id_categorie = scrapy.Field()
+    lien_categorie = scrapy.Field()
+    sous_categorie = scrapy.Field()
+    id_sous_categorie = scrapy.Field()
+    lien_sous_categorie = scrapy.Field()
+    sous_sous_categorie = scrapy.Field()
+    id_sous_sous_categorie = scrapy.Field()
+    lien_sous_sous_categorie = scrapy.Field()
