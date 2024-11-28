@@ -1,11 +1,25 @@
+from collections.abc import Iterable
 import scrapy
 from bricoscraper.items import ProduitItem
+import csv
 
 class ProduitSpider(scrapy.Spider):
     name = "produit"
     allowed_domains = ["www.centrale-brico.com"]
-    start_urls = ["https://www.centrale-brico.com/electroportatif/equipement-stationnaire/accessoires-compresseur"]
 
+
+    #start_urls = ["https://www.centrale-brico.com/electroportatif/equipement-stationnaire/accessoires-compresseur"]
+    def start_requests(self): 
+         with open('testitem.csv', 'r') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            for row in reader:
+                if row[-3] != 'lien_sous_sous_categorie':
+                     yield scrapy.Request(
+                          url=row[-3],
+                          callback=self.parse
+                     )
+    
+    
     def parse(self, response):
 
         produits = response.css('article.product-miniature.bx-cb-card')
