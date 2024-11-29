@@ -11,12 +11,10 @@ class CategorieItem(scrapy.Item):
     categorie = scrapy.Field()
     id_categorie = scrapy.Field()
     lien_categorie = scrapy.Field()
-    sous_categorie = scrapy.Field()
-    id_sous_categorie = scrapy.Field()
-    lien_sous_categorie = scrapy.Field()
-    sous_sous_categorie = scrapy.Field()
-    id_sous_sous_categorie = scrapy.Field()
-    lien_sous_sous_categorie = scrapy.Field()
+    type = scrapy.Field()
+    id_cat_parent = scrapy.Field()
+   
+  
 
 class ProduitItem(scrapy.Item):
     nom = scrapy.Field()

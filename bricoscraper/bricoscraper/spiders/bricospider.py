@@ -19,17 +19,21 @@ class BricospiderSpider(scrapy.Spider):
                 lien_categorie,
                 callback=self.parse_sous_categories,
                 meta={
-                    "nom_categorie": nom_categorie,
                     "lien_categorie": lien_categorie,
-                    "id_categorie": id_categorie,
+                    "id_cat_parent" : id_categorie
                 },
             )
-
+            yield CategorieItem(
+                categorie = nom_categorie,
+                id_categorie = id_categorie,
+                lien_categorie = lien_categorie,
+                type = "CAT",
+                id_cat_parent = None
+                
+            )
+                #parse_
     def parse_sous_categories(self, response):
         sous_categories = response.css("ul.menu-item-level-1 > li.category > a")
-        nom_categorie = response.meta["nom_categorie"]
-        lien_categorie = response.meta["lien_categorie"]
-        id_categorie = response.meta["id_categorie"]
 
         for sous_categorie in sous_categories:
             # Exclure le contenu de la balise <span>
@@ -41,26 +45,21 @@ class BricospiderSpider(scrapy.Spider):
                 lien_sous_categorie,
                 callback=self.parse_sous_sous_categories,
                 meta={
-                        "nom_categorie": nom_categorie,
-                        "lien_categorie": lien_categorie,
-                        "id_categorie": id_categorie,
-                        "nom_sous_categorie": nom_sous_categorie,
-                        "id_sous_categorie": id_sous_categorie,
-                        "lien_sous_categorie": lien_sous_categorie,
-                    
-                    },
+                    "id_cat_parent" : id_sous_categorie
+                }
                 )
+            yield CategorieItem(
+                categorie = nom_sous_categorie,
+                id_categorie = id_sous_categorie,
+                lien_categorie = lien_sous_categorie,
+                type = "SOUS_CAT",
+                id_cat_parent = response.meta["id_cat_parent"]
+            )
 
+            
     def parse_sous_sous_categories(self, response):
         # Récupérer les données de la catégorie et sous-catégorie
-        nom_categorie = response.meta["nom_categorie"]
-        lien_categorie = response.meta["lien_categorie"]
-        id_categorie = response.meta["id_categorie"]
-        nom_sous_categorie = response.meta["nom_sous_categorie"]
-        lien_sous_categorie = response.meta["lien_sous_categorie"]
-        id_sous_categorie = response.meta["id_sous_categorie"]
-        categorie_item = CategorieItem()
-
+    
         # Étape 3 : Récupérer les sous-sous-catégories
         sous_sous_categories = response.css("ul.menu-item-level-2 > li.category > a")
         for sous_sous_categorie in sous_sous_categories:
@@ -69,30 +68,20 @@ class BricospiderSpider(scrapy.Spider):
             id_sous_sous_categorie = sous_sous_categorie.css("::attr(id)").get()
 
             yield CategorieItem(
-                categorie = nom_categorie,
-                id_categorie = id_categorie,
-                lien_categorie = lien_categorie,
-                sous_categorie = nom_sous_categorie,
-                id_sous_categorie = id_sous_categorie,
-                lien_sous_categorie = lien_sous_categorie,
-                sous_sous_categorie = nom_sous_sous_categorie,
-                id_sous_sous_categorie = id_sous_sous_categorie,
-                lien_sous_sous_categorie = lien_sous_sous_categorie
+                categorie = nom_sous_sous_categorie,
+                id_categorie = id_sous_sous_categorie,
+                lien_categorie = lien_sous_sous_categorie,
+                type = "PAGE_LIST",
+                id_cat_parent = response.meta["id_cat_parent"]
             )
 
+        # if not sous_sous_categories:
 
-        if not sous_sous_categories:
+        #     categorie_item['categorie']=nom_categorie,
+        #     categorie_item['id_categorie']=id_categorie,
+        #     categorie_item['lien_categorie']=lien_categorie,
+            
 
-            categorie_item['categorie']=nom_categorie,
-            categorie_item['id_categorie']=id_categorie,
-            categorie_item['lien_categorie']=lien_categorie,
-            categorie_item['sous_categorie']=nom_sous_categorie,
-            categorie_item['id_sous_categorie']=id_sous_categorie,
-            categorie_item['lien_sous_categorie']=lien_sous_categorie,
-            categorie_item['sous_sous_categorie']=None,
-            categorie_item['id_sous_sous_categorie']=None,
-            categorie_item['lien_sous_sous_categorie']=None,
-
-            yield categorie_item
+        #     yield categorie_item
 
         #modifier les noms pour que l'ordre alphabétique corresponde à l'ordre voulu
