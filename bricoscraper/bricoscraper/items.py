@@ -19,7 +19,7 @@ class CategorieItem(scrapy.Item):
 class ProduitItem(scrapy.Item):
     nom = scrapy.Field()
     prix = scrapy.Field()
-    remise = scrapy.Field()
+    remise_pourcentage = scrapy.Field()
     code = scrapy.Field()
     EAN_13 = scrapy.Field()
     reference_fabricant = scrapy.Field()

@@ -10,12 +10,12 @@ class ProduitSpider(scrapy.Spider):
 
     #start_urls = ["https://www.centrale-brico.com/electroportatif/equipement-stationnaire/accessoires-compresseur"]
     def start_requests(self): 
-         with open('testitem.csv', 'r') as csvfile:
+         with open('bricospider.csv', 'r') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
-                if row[-3] != 'lien_sous_sous_categorie':
+                if row[-2] != 'lien_sous_sous_categorie' and row[-1]=="PAGE_LIST":
                      yield scrapy.Request(
-                          url=row[-3],
+                          url=row[-2],
                           callback=self.parse
                      )
     
@@ -53,7 +53,7 @@ class ProduitSpider(scrapy.Spider):
             yield ProduitItem(
                  nom = nom_produit,
                  prix = prix_produit,
-                 remise = remise_produit,
+                 remise_pourcentage = remise_produit,
                  code = code_produit,
                  EAN_13 = ean13,
                  reference_fabricant = ref_fabricant,
@@ -63,14 +63,3 @@ class ProduitSpider(scrapy.Spider):
                  marque = marque_produit
             )
 
-            
-                #récupère toutes les infos d'un produit sans passer à la page suivante
-
-    #def parse_produit_page(self, response):
-    #fetch(relative_url) -> .css('span.the_price ::attr(content)').get() donne le prix
-    #-> response.css('span.text-red ::text').get() donne le pourcentage de réduction (peut etre à mettre avec un if)
-    #-> response.css('h2.product-miniature-title a::attr(href)').get() donne l'url du produit
-    #-> response.xpath("//span[@id='product-reference']/span[@itemprop='sku']/text()").get() donne le code sku "Code"
-    #-> response.xpath("//span[@id='product-ean13']/text()").get() donne le ean13
-    #-> response.xpath("//span[@id='product-manufacturer-reference']/text()").get() donne la référence du fabricant
-    #-> response.css('#product-description p::text').get() donne la description de l'article
