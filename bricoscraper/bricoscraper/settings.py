@@ -64,8 +64,9 @@ DOWNLOAD_DELAY = 3
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "bricoscraper.pipelines.BricoscraperPipeline": 300,
+    "bricoscraper.pipelines.SaveToDbPipeline": 400
 }
-
+DATABASE_URL = "sqlite:///scrapping.db"
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
