@@ -9,7 +9,7 @@ class Categories(SQLModel, table=True):
     type : str = Field(default=None, nullable=False)
     id_cat_parent : str = Field(nullable=True)
 
-    produits: List["Produits"] = Relationship(back_populates="categorie_objet")
+    produits: List["Produits"] = Relationship(back_populates="produits.categorie")
 
 class Produits(SQLModel, table=True):
     nom : str = Field(nullable=False)
@@ -19,7 +19,7 @@ class Produits(SQLModel, table=True):
     EAN_13 : str = Field(default=None, primary_key=True, nullable=False)
     reference_fabricant : str = Field(default=None, nullable=False)
     description : str = Field(default=None, nullable=False)
-    categorie_produit : Optional[str] = Field(default=None, foreign_key="categories.categorie")
+    categorie : str = Field(default=None, foreign_key="categories.categorie")
     url_produit : str = Field(default=None, nullable=False)
     marque : str = Field(default=None, nullable=False)
 

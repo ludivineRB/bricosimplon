@@ -117,3 +117,68 @@ class SaveToDbPipeline:
                 session.rollback()
                 #spider.logger.error(f"Erreur d'intégrité pour l'item {item}")
         return item
+    
+class CategoriePipeline:
+    def __init__(self):
+        self.enregistre2 = set()
+
+    def process_item(self, item, bricospider):
+        adapter = ItemAdapter(item)
+
+        if adapter["id_categorie"] in self.enregistre2:
+            raise DropItem(f"Duplication trouvé {item!r}")
+        else:
+            self.enregistre2.add(adapter["id_categorie"])
+        
+        #transfo id categorie
+        categorie_string=adapter.get('id_categorie')
+        categorie_split = categorie_string.split('-')
+        adapter['id_categorie']=categorie_split[1]
+
+        #transfo id cat parent
+        cat_parent_string=adapter.get('id_cat_parent')
+        if cat_parent_string:
+            cat_parent_split = cat_parent_string.split('-')
+            adapter['id_cat_parent']=cat_parent_split[1]
+        else :
+            adapter['id_cat_parent']=None
+
+        return item
+    
+class CategoryToDbPipeline:
+    def __init__(self, engine):
+        """
+        Initialise le pipeline avec un moteur SQLAlchemy/SQLModel.
+        """
+        self.engine = engine
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        """
+        Méthode de classe permettant de créer l'instance avec l'engine Scrapy.
+        """
+        # Récupérer le moteur SQLAlchemy à partir des paramètres Scrapy
+        db_url = crawler.settings.get("DATABASE_URL")
+        if not db_url:
+            raise ValueError("DATABASE_URL doit être défini dans les paramètres Scrapy")
+        engine = create_engine(db_url)
+        return cls(engine)
+
+    def process_item(self, item, spider):
+        """
+        Ajoute un élément dans la base de données.
+        """
+        adapter = ItemAdapter(item)
+
+        # Utilisation de la session SQLModel
+        with Session(self.engine) as session:
+            try:
+                # Construire une instance du modèle SQLModel
+                item_to_add = Categories(**adapter.asdict())
+                session.add(item_to_add)
+                session.commit()
+            except IntegrityError:
+                session.rollback()
+                #spider.logger.error(f"Erreur d'intégrité pour l'item {item}")
+        return item
+    

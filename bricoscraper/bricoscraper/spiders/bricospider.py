@@ -6,6 +6,15 @@ class BricospiderSpider(scrapy.Spider):
     allowed_domains = ["www.centrale-brico.com"]
     start_urls = ["https://www.centrale-brico.com/"]
 
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(BricospiderSpider, cls).from_crawler(crawler, *args, **kwargs)
+        # Ajouter dynamiquement une pipeline spécifique à cette spider
+        crawler.settings.set('ITEM_PIPELINES', {"bricoscraper.pipelines.CategoriePipeline": 400, 
+                                                "bricoscraper.pipelines.CategoryToDbPipeline": 500 # Nom complet de votre pipeline
+        })
+        return spider
+    
     def parse(self, response):
         # Étape 1 : Récupérer les catégories principales
         categories = response.css("ul.menu-item-level-0 > li.category > a")

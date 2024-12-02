@@ -7,13 +7,22 @@ class ProduitSpider(scrapy.Spider):
     name = "produit"
     allowed_domains = ["www.centrale-brico.com"]
 
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(ProduitSpider, cls).from_crawler(crawler, *args, **kwargs)
+        # Ajouter dynamiquement une pipeline spécifique à cette spider
+        crawler.settings.set('ITEM_PIPELINES', {"bricoscraper.pipelines.BricoscraperPipeline": 300,"bricoscraper.pipelines.SaveToDbPipeline": 600  # Nom complet de votre pipeline
+        })
+        return spider
+    
+
 
     #start_urls = ["https://www.centrale-brico.com/electroportatif/equipement-stationnaire/accessoires-compresseur"]
     def start_requests(self): 
          with open('bricospider.csv', 'r') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
-                if row[-2] != 'lien_sous_sous_categorie' and row[-1]=="PAGE_LIST":
+                if row[-2] != 'lien_categorie' and row[-1]=="PAGE_LIST":
                      yield scrapy.Request(
                           url=row[-2],
                           callback=self.parse
