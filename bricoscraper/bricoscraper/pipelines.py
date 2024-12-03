@@ -54,32 +54,7 @@ class BricoscraperPipeline:
         adapter['nom'] = nom_produit
 
         return item
-    #  def open_spider(self, spider):
-    #     self.file = open("items.jsonl", "w")
-    # pour directement metre les trucs dans un json, je suppose que ça marche aussi avec un csv 
 
-# class SaveToDb:
-#     def __init__(self):
-#         # session = Session(engine)
-#         # return session
-#         pass
-    
-#     def process_item(self, item, produit):
-#         adapter = ItemAdapter(item)
-#         session = Session(engine)
-
-#         item_to_add = Produits(adapter.get(item))
-#         session.add(item_to_add)
-#         item_to_add = adapter.get(item)
-#         item_to_add = Produits(**item_to_add.asdict())
-#         session.add(item_to_add)
-        
-#         try:
-#              session.commit()
-#         except IntegrityError:
-#             session.rollback()
-
-#         return item
 
 class SaveToDbPipeline:
     def __init__(self, engine):

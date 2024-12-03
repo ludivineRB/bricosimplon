@@ -3,13 +3,13 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
 
 class Categories(SQLModel, table=True):
-    categorie: str = Field(nullable=False)
+    categorie: str = Field(default=None, unique=True)
     id_categorie : str = Field(default=None, primary_key=True, nullable=False)
     lien_categorie : str = Field(default=None, nullable=False)
     type : str = Field(default=None, nullable=False)
     id_cat_parent : str = Field(nullable=True)
 
-    produits: List["Produits"] = Relationship(back_populates="produits.categorie")
+    produits: List["Produits"] = Relationship(back_populates="categorie_objet")
 
 class Produits(SQLModel, table=True):
     nom : str = Field(nullable=False)
