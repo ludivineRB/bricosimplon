@@ -7,7 +7,6 @@ import scrapy
 
 
 class CategorieItem(scrapy.Item):
-    # define the fields for your item here like:
     categorie = scrapy.Field()
     id_categorie = scrapy.Field()
     lien_categorie = scrapy.Field()

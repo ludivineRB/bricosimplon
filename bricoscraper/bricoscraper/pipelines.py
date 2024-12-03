@@ -14,18 +14,25 @@ from sqlalchemy.exc import IntegrityError
 
 class BricoscraperPipeline:
     def __init__(self):
+        """_summary_ permet d'initialiser une variable
+        """
         self.enregistre = set()
 
-    def process_item(self, item, produit):
+
+    def process_item(self, item, spider):
+        """_summary_  permet de vérifier et nettoyer les données
+
+        Args:
+            item (_type_): _description_ un item Categorie
+            spider (_type_): _description_ la spider bricospider
+
+        Raises:
+            DropItem: _description_
+
+        Returns:
+            _type_: _description_ retourne l'item ayant suivi les différents process de transformations
+        """
         adapter = ItemAdapter(item)
-
-        # #verification des doublons
-        # if adapter["id_categorie"] in self.categorie:
-        #     raise DropItem(f"Duplication trouvé {item!r}")
-        # else:
-        #     self.enregistre.add(adapter["id_categorie"])
-
-        #verification des doublons
         if adapter["EAN_13"] in self.enregistre:
             raise DropItem(f"Duplication trouvé {item!r}")
         else:
@@ -59,15 +66,25 @@ class BricoscraperPipeline:
 class SaveToDbPipeline:
     def __init__(self, engine):
         """
-        Initialise le pipeline avec un moteur SQLAlchemy/SQLModel.
+        Initialise la connexion avec le moteur SQLmodel
         """
         self.engine = engine
 
     @classmethod
     def from_crawler(cls, crawler):
+        """_summary_ Méthode de classe permettant de créer l'instance avec l'engine.
+
+        Args:
+            crawler (_type_): _description_ 
+
+        Raises:
+            ValueError: _description_ L'adresse de la base doit être préalablement définie
+
+        Returns:
+            _type_: _description_ retourne l'objet engine
         """
-        Méthode de classe permettant de créer l'instance avec l'engine Scrapy.
-        """
+        
+        
         # Récupérer le moteur SQLAlchemy à partir des paramètres Scrapy
         db_url = crawler.settings.get("DATABASE_URL")
         if not db_url:
@@ -76,15 +93,19 @@ class SaveToDbPipeline:
         return cls(engine)
 
     def process_item(self, item, spider):
-        """
-        Ajoute un élément dans la base de données.
+        """_summary_ ajout de l'item dans la base de données
+
+        Args:
+            item (_type_): _description_
+            spider (_type_): _description_
+
+        Returns:
+            _type_: _description_
         """
         adapter = ItemAdapter(item)
-
-        # Utilisation de la session SQLModel
         with Session(self.engine) as session:
             try:
-                # Construire une instance du modèle SQLModel
+                # Construction d'une instance du modèle SQLModel, le modèle reçoit l'item sous forme de dict
                 item_to_add = Produits(**adapter.asdict())
                 session.add(item_to_add)
                 session.commit()
@@ -95,9 +116,23 @@ class SaveToDbPipeline:
     
 class CategoriePipeline:
     def __init__(self):
+        """_summary_ initialisation de a variable pour verifier les doublons
+        """
         self.enregistre2 = set()
 
-    def process_item(self, item, bricospider):
+    def process_item(self, item, spider):
+        """_summary_
+
+        Args:
+            item (_type_): _description_
+            spider (_type_): _description_
+
+        Raises:
+            DropItem: _description_ en cas de duplication on supprime l'item
+
+        Returns:
+            _type_: _description_ retourne l'item
+        """
         adapter = ItemAdapter(item)
 
         if adapter["id_categorie"] in self.enregistre2:
@@ -121,39 +156,53 @@ class CategoriePipeline:
         return item
     
 class CategoryToDbPipeline:
+
     def __init__(self, engine):
-        """
-        Initialise le pipeline avec un moteur SQLAlchemy/SQLModel.
+        """_summary_ permet de créer la connexion engine via SQLmodel
+
+        Args:
+            engine (_type_): _description_
         """
         self.engine = engine
 
+
     @classmethod
     def from_crawler(cls, crawler):
+        """_summary_ Méthode pour relier 
+
+        Args:
+            crawler (_type_): _description_
+
+        Raises:
+            ValueError: _description_
+
+        Returns:
+            _type_: _description_ un engine fonctionnel
         """
-        Méthode de classe permettant de créer l'instance avec l'engine Scrapy.
-        """
-        # Récupérer le moteur SQLAlchemy à partir des paramètres Scrapy
         db_url = crawler.settings.get("DATABASE_URL")
         if not db_url:
             raise ValueError("DATABASE_URL doit être défini dans les paramètres Scrapy")
         engine = create_engine(db_url)
         return cls(engine)
 
+
     def process_item(self, item, spider):
-        """
-        Ajoute un élément dans la base de données.
+        """_summary_ permet d'ajouter l'item dans la base de données
+
+        Args:
+            item (_type_): _description_ item de Produits 
+            spider (_type_): _description_ spider produit
+
+        Returns:
+            _type_: _description_ retourne l'item
         """
         adapter = ItemAdapter(item)
-
-        # Utilisation de la session SQLModel
         with Session(self.engine) as session:
             try:
-                # Construire une instance du modèle SQLModel
                 item_to_add = Categories(**adapter.asdict())
                 session.add(item_to_add)
                 session.commit()
             except IntegrityError:
                 session.rollback()
-                #spider.logger.error(f"Erreur d'intégrité pour l'item {item}")
         return item
     

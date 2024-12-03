@@ -8,14 +8,30 @@ class BricospiderSpider(scrapy.Spider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
+        """_summary_ Permet d'assigner les pipelines à cette spider
+
+        Args:
+            crawler (_type_): _description_
+
+        Returns:
+            _type_: _description_ la spider BricospiderSpider qui permet de récupérer les catégories
+        """
         spider = super(BricospiderSpider, cls).from_crawler(crawler, *args, **kwargs)
         # Ajouter dynamiquement une pipeline spécifique à cette spider
         crawler.settings.set('ITEM_PIPELINES', {"bricoscraper.pipelines.CategoriePipeline": 400, 
-                                                "bricoscraper.pipelines.CategoryToDbPipeline": 500 # Nom complet de votre pipeline
+                                                "bricoscraper.pipelines.CategoryToDbPipeline": 500 
         })
         return spider
     
     def parse(self, response):
+        """ Récupère les catégories principales
+
+        Args:
+            response (_type_): _description_ objet de réponse à l'issu de la requête
+
+        Yields:
+            _type_: _description_ retourne le lien de chaque catégorie principale, appelle une autre fonction et envoie des infos via meta, et crée un item avec les informations.
+        """
         # Étape 1 : Récupérer les catégories principales
         categories = response.css("ul.menu-item-level-0 > li.category > a")
         for categorie in categories:
@@ -42,11 +58,18 @@ class BricospiderSpider(scrapy.Spider):
             )
                 #parse_
     def parse_sous_categories(self, response):
+        """_summary_ Retourne toutes les sous catégories issues du lien de la catégorie principale.
+ 
+        Args:
+            response (_type_): _description_ objet de réponse à l'issu de la requête
+
+        Yields:
+            _type_: _description_ retourne le lien de chaque sous-catégorie , appelle une autre fonction et crée un item contenant les informations.
+        """
         sous_categories = response.css("ul.menu-item-level-1 > li.category > a")
 
         for sous_categorie in sous_categories:
-            # Exclure le contenu de la balise <span>
-            nom_sous_categorie = sous_categorie.xpath("text()").get().strip()  # Récupère uniquement le texte hors <span>
+            nom_sous_categorie = sous_categorie.xpath("text()").get().strip()  # Récupère uniquement le texte hors <span>, sinon ajoute un +
             lien_sous_categorie = sous_categorie.css("::attr(href)").get()
             id_sous_categorie = sous_categorie.css("::attr(id)").get()
 
@@ -67,9 +90,14 @@ class BricospiderSpider(scrapy.Spider):
 
             
     def parse_sous_sous_categories(self, response):
-        # Récupérer les données de la catégorie et sous-catégorie
-    
-        # Étape 3 : Récupérer les sous-sous-catégories
+        """_summary_ retourne toutes les sous-sous-catégories issues d'un lien sous-catégories. C'est catégories sont des pages listes et contiennent les listes de produits
+
+        Args:
+            response (_type_): _description_ description_ objet de réponse à l'issu de la requête
+
+        Yields:
+            _type_: _description_ création d'un item dans le 
+        """
         sous_sous_categories = response.css("ul.menu-item-level-2 > li.category > a")
         for sous_sous_categorie in sous_sous_categories:
             nom_sous_sous_categorie = sous_sous_categorie.css("::text").get()
@@ -84,13 +112,4 @@ class BricospiderSpider(scrapy.Spider):
                 id_cat_parent = response.meta["id_cat_parent"]
             )
 
-        # if not sous_sous_categories:
-
-        #     categorie_item['categorie']=nom_categorie,
-        #     categorie_item['id_categorie']=id_categorie,
-        #     categorie_item['lien_categorie']=lien_categorie,
-            
-
-        #     yield categorie_item
-
-        #modifier les noms pour que l'ordre alphabétique corresponde à l'ordre voulu
+     
